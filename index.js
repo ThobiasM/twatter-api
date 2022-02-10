@@ -3,19 +3,25 @@ const bodyParser = require("body-parser");
 const app = express();
 const db = require("./queries");
 const jwt = require("jsonwebtoken");
-const cors = require('cors')
+const cors = require('cors');
+require('dotenv').config();
 const port = process.env.PORT;
 const secret = process.env.SECRET;
 
 
 const Pool = require("pg").Pool;
+// const pool = new Pool({
+//   user: "thobias",
+//   host: "localhost",
+//   database: "twatter",
+//   password: "password",
+//   port: 5433,
+// });
+
 const pool = new Pool({
-  user: "thobias",
-  host: "localhost",
-  database: "twatter",
-  password: "password",
-  port: 5433,
-});
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.IS_LOCAL ? undefined : { rejectUnauthorized: false },
+})
 
 
 app.use(bodyParser.json());
