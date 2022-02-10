@@ -4,7 +4,9 @@ const app = express();
 const db = require("./queries");
 const jwt = require("jsonwebtoken");
 const cors = require('cors')
-const port = 3333;
+const port = process.env.PORT;
+const secret = process.env.SECRET;
+
 
 const Pool = require("pg").Pool;
 const pool = new Pool({
@@ -15,7 +17,6 @@ const pool = new Pool({
   port: 5433,
 });
 
-const secret = "secret1234";
 
 app.use(bodyParser.json());
 app.use(
