@@ -2,11 +2,8 @@ const res = require('express/lib/response')
 
 const Pool = require('pg').Pool
 const pool = new Pool({
-  user: 'thobias',
-  host: 'localhost',
-  database: 'twatter',
-  password: 'password',
-  port: 5433,
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.IS_LOCAL ? undefined : { rejectUnauthorized: false },
 })
 
 const getAllTweets = (request, response) => {
