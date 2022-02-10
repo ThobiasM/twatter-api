@@ -1,0 +1,6 @@
+POST http://localhost:3000/tweets/1
+Content-Type: application/json
+
+{
+    "message": "This is a tuesday test Santa"
+}
