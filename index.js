@@ -41,7 +41,6 @@ app.get("/users/:id", db.getUserById);
 app.get("/tweets", db.getAllTweets);
 app.get("/tweets/:username", db.getTweetsByUsername);
 // app.post('/tweets/:userId', db.postTwat)
-app.post("/users", db.createUser);
 app.put("/users/:id", db.updateUser);
 app.delete("/users/:id", db.deleteUser);
 
@@ -58,7 +57,7 @@ app.post("/login", async (req, res) => {
       return res.status(401).send({ error: "Wrong username" });
     }
     if (password !== user.password) {
-      return res.status(401).send({ error: "Wrong password" });
+      throw new Error('Wrong password');
     }
     const token = jwt.sign(
       {
@@ -113,3 +112,40 @@ pool.query('SELECT* FROM users', (err, res) => {
     console.log(res.rows[0])
   }
 })
+
+
+app.post("/users", async (req, res) => {
+  const { name, username, password } = req.body;
+
+  try {
+    const user = await getUserByUsername(username);
+
+    if (user) {
+      return res.status(409).send("Sorry, username already taken");
+    }
+
+    pool.query(
+      "INSERT INTO users (name, username, password) VALUES ($1, $2, $3)",
+      [name, username, password],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+      }
+    );
+    const userAdded = await getUserByUsername(username);
+      if(userAdded){
+        return res.status(201).json(`Welcome to Twatter, ${name}`);
+      }
+    
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+
+async function getUserByUsername(username) {
+  return await pool
+    .query("SELECT* FROM users WHERE username = $1", [username])
+    .then((res) => res.rows[0]);
+}
